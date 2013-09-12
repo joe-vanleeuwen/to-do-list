@@ -238,7 +238,9 @@ li:hover {
     background: linear-gradient(to bottom, #116291 0%, #2B88BE 100%);
 }
 
-
+.toggle-button-active:hover {
+    background: linear-gradient(to bottom, #116291 0%, #2B88BE 100%);
+}
 
 
 
