@@ -82,6 +82,20 @@ function fetchAndOrDisplayCollection(collection, needsFetched) {
 	return [];
 };
 
+function fetchCollection(collection) {
+	collection.fetch({
+		success: function(resultingCollection) {
+			// this will diplay all toDo's in the specified collection
+			// and attatch a click event to each <li>.
+			console.log('what')
+			displayCollection(resultingCollection);
+		},
+		error: function(resultingCollection, error) {
+			console.log(error.description);
+		}
+	});
+};
+
 // this will get resently modified toDos and add them into the appropriate collection. Awesome.
 function getQuery(collection, id) {
 	var query = new Parse.Query(ToDoClass);
@@ -101,43 +115,45 @@ function displayCollection(resultingCollection) {
 	$('.content ul').html('');
 	// adding click and hover events to each toDo and display each toDo's title with edit, complete, and delete icons.
 	resultingCollection.each(function(toDo) {
-		$(addToDo(toDo, resultingCollection)).click(function() {
-			console.log(toDo.get('title'));
-		}).hover(function() {
-			// you'd think i could target the spans in the li and give the class visible and then remove on mouseout. 
-			// Could'nt seem to get that to work. And when i chose to append the spans and remove on mouseout,
-			// when the mouse would hover for a little extra over the <hr> tagss that separate the <li> tags,
-			// the mousein and mouseout would target the <hr> tags and append the spans onto them. . . .
-			// HAHA, long story just lost relevance--I just separated the <hr> tag out of var item in the addToDo function. Fixed!
-			// Though, i had solved the problem using an alternative method.
-			var editCompleteDelete = '<a href="#" class="edit">✎</a><a href="#" class="complete">✓</a><a href="#" class="delete">✕</a>';
-			$(this).append(editCompleteDelete);
-		},
-		function() {
-			$(this).html('');
-			$(this).text(toDo.get('title'));
-		});
+		// appending toDo. Appending icons to each toDo. Making icons clickable and adding functionality.
+		makeIconsClickable(addIcons(addToDo(toDo, resultingCollection), toDo))
 	});  
+};
+
+// will take item argument which will be an <li> tag with a toDo title inside.
+function addIcons(item, toDo) {
+	$(item).hover(function() {
+		editIt = '<a href="#" class="edit" "' + toDo.id + '">✎</a>';
+		completeIt = '<a href="#" class="complete" "' + toDo.id + '">✓</a>';
+		deleteIt = '<a href="#" class="delete" "' + toDo.id + '">✕</a>';
+
+		$(this).append(editIt)
+		$(this).append(completeIt);
+		$(this).append(deleteIt);
+	},
+	function() {
+		$(this).html('');
+		$(this).text(toDo.get('title'));
+	});
+	return item;
 }
 
-function fetchCollection(collection) {
-	collection.fetch({
-		success: function(resultingCollection) {
-			// this will diplay all toDo's in the specified collection
-			// and attatch a click event to each <li>.
-			console.log('what')
-			displayCollection(resultingCollection);
-		},
-		error: function(resultingCollection, error) {
-			console.log(error.description);
-		}
+function makeIconsClickable(item) {
+	$(item).on('click', '.edit', function() {
+		console.log('edit')
+	});
+	$(item).on('click', '.complete', function() {
+		console.log('complete')
+	});
+	$(item).on('click', '.delete', function() {
+		console.log('delete')
 	});
 };
 
 function toggleButtons() {
 	$('.uncompleted').toggleClass('toggle-button-active');
 	$('.completed').toggleClass('toggle-button-active');
-}
+};
 
 function addToDoButton() {
 	$('.new-to-do').toggleClass('new-to-do-active');
@@ -146,12 +162,11 @@ function addToDoButton() {
 };
 
 function validate(inputClass) {
-	var valid = true
 	if($(inputClass).val() === "") {
-		valid = false;
+		return false;
 	}
-	return valid;
-}
+	else {return true};
+};
 
 function save(inputClass) {
 	var toDo = new ToDoClass();
@@ -173,14 +188,16 @@ function save(inputClass) {
 				console.log(error.description)
 			}
 		});
-	}
-}
+	};
+};
 
 function saveOnEnter(inputClass) {
 	if (event.which == 13) {
 		save(inputClass);
 	};
-}
+};
+
+
 
 
 

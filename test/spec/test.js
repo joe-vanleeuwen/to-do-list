@@ -24,7 +24,7 @@
     					done(error.description);
     				}
     			});
-    		},2000)
+    		},2500)
     	});
 
         it('when save button is clicked and ToDo button is depressed, should add the new ToDo to the .content ul', function(done) {
@@ -109,3 +109,10 @@
         });
     })
 })();
+
+
+
+
+
+
+
