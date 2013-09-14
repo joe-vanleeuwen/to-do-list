@@ -47,16 +47,29 @@ $('document').ready(function() {
 	})
 
 	// clicking the pluss sign will save
-	$('.save').click(function() {
-		save('.add');
+	$('.add-button').click(function() {
+		toggleDropDown()
+		save('.add-input');
 	});
 
-	$('.add').keydown(function(event) {
+	$('.add-input').keydown(function(event) {
+		// toggleDropDown()
+		saveOnEnter('.' + $(this).attr('class'));
+   	});
+
+   	// editting functionality
+   	$('.edit-button').click(function() {
+   		toggleEditModal()
+		save('.edit-input');
+	});
+
+   	$('.edit-input').keydown(function(event) {
+   		// toggleEditModal()
 		saveOnEnter('.' + $(this).attr('class'));
    	});
 
 	$('.add-to-do').click(function() {
-		addToDoButton();
+		toggleDropDown();
 	});
 });
 
@@ -116,20 +129,15 @@ function displayCollection(resultingCollection) {
 	// adding click and hover events to each toDo and display each toDo's title with edit, complete, and delete icons.
 	resultingCollection.each(function(toDo) {
 		// appending toDo. Appending icons to each toDo. Making icons clickable and adding functionality.
-		makeIconsClickable(addIcons(addToDo(toDo, resultingCollection), toDo))
+		makeIconsClickable(addIcons(addToDo(toDo, resultingCollection), toDo), toDo)
 	});  
 };
 
 // will take item argument which will be an <li> tag with a toDo title inside.
 function addIcons(item, toDo) {
 	$(item).hover(function() {
-		editIt = '<a href="#" class="edit" "' + toDo.id + '">✎</a>';
-		completeIt = '<a href="#" class="complete" "' + toDo.id + '">✓</a>';
-		deleteIt = '<a href="#" class="delete" "' + toDo.id + '">✕</a>';
-
-		$(this).append(editIt)
-		$(this).append(completeIt);
-		$(this).append(deleteIt);
+		var icons = '<a href="#" class="edit" "' + toDo.id + '">✎</a><a href="#" class="complete" "' + toDo.id + '">✓</a><a href="#" class="delete" "' + toDo.id + '">✕</a>';
+		$(this).append(icons)
 	},
 	function() {
 		$(this).html('');
@@ -138,9 +146,10 @@ function addIcons(item, toDo) {
 	return item;
 }
 
-function makeIconsClickable(item) {
+function makeIconsClickable(item, toDo) {
 	$(item).on('click', '.edit', function() {
-		console.log('edit')
+		toggleEditModal();
+		$('.edit-input').val(toDo.get('title'));
 	});
 	$(item).on('click', '.complete', function() {
 		console.log('complete')
@@ -150,12 +159,17 @@ function makeIconsClickable(item) {
 	});
 };
 
+function toggleEditModal() {
+	$('.modal-background').toggleClass('modal-background-active');
+	$('.modal-box').toggleClass('modal-box-active');
+}
+
 function toggleButtons() {
 	$('.uncompleted').toggleClass('toggle-button-active');
 	$('.completed').toggleClass('toggle-button-active');
 };
 
-function addToDoButton() {
+function toggleDropDown() {
 	$('.new-to-do').toggleClass('new-to-do-active');
 	$('.thin-line').toggleClass('thin-line-active');
 	$('.container').toggleClass('container-active');
@@ -176,12 +190,9 @@ function save(inputClass) {
 	if (validate(inputClass)) {
 		toDo.save({
 			success: function(result) {
-				console.log(result.id)
 				newlyAddedToDos.push(result.id)
-				addToDoButton();
 				if ($('.uncompleted').hasClass('toggle-button-active')) {
 					addToDo(result);
-					// $('.content ul').append('<hr>');
 				};
 			},
 			error: function(results, error) {

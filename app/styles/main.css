@@ -22,6 +22,11 @@ input {
     border: 0;
 }
 
+input:focus {
+    outline-offset: 0;
+    outline: none;
+}
+
 a {
     text-decoration: none;
 }
@@ -154,7 +159,7 @@ li:hover {
     -webkit-transition: bottom .7s ease;
 }
 
-.input-and-save {
+.input-and-button {
     width: 310px;
     margin: 37px auto 0;
 }
@@ -181,17 +186,22 @@ li:hover {
     width: 80px;
     height: 45px;
     background: #1C84BE;
-    color: #A9E1F7;
+    color: #13608B;
     font-size: 36px;
-    line-height: 42px;
+    line-height: 40px;
     text-align: center;
-    margin-left: -4px;
+    margin: 1px 0 0 -4px;
     display: inline-block;
     border-radius: 0 4px 4px 0;
     border: 1px solid #13608B;
     box-shadow: inset 0px 4px 1px -3px rgb(182, 182, 182);
-    text-shadow: 0 1px 0 #13608B;
+    text-shadow: 1px 1px 0 #82BEDF;
     background: linear-gradient(to bottom, #539BB8 0%, #197BB3 100%);
+}
+
+.edit-button {
+    font-size: 34px;
+    line-height: 48px;
 }
 
 /*
@@ -212,6 +222,7 @@ li:hover {
 }*/
 
 .rectangle-button:hover {
+    color: #20567A;
     background: linear-gradient(to bottom, #5BA8C7 0%, #197BB3 100%);
 }
 
@@ -270,10 +281,34 @@ li:hover {
     background: linear-gradient(to bottom, #116291 0%, #2B88BE 100%);
 }
 
+/* modal */
 
+.modal-background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0);
+    border-radius: 8px;
+    z-index: 200;
+    visibility: hidden;
+}
 
+.modal-background-active {
+    background: rgba(0, 0, 0, 0.4);
+    visibility: visible;
+}
 
+.modal-box {
+    z-index: 200;
+    margin-top: 162px;
+    visibility: hidden;
+}
 
+.modal-box-active {
+    visibility: visible;
+}
 
 
 
