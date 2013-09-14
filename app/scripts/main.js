@@ -34,38 +34,26 @@ $('document').ready(function() {
 
 	// toggle buttons ToDo and Completed
 	$('.uncompleted').click(function() {
-		toggleButtons()
+		toggleButtons();
 		// if newToDoAdded === false, function will only loop through collection and display titles. Otherwise function will first fetch collection and display titles.
 		// newToDoAdded = fetchAndOrDisplayCollection(uncompletedToDos, newToDoAdded) || false
-		newlyAddedToDos = fetchAndOrDisplayCollection(uncompletedToDos, newlyAddedToDos)
+		newlyAddedToDos = fetchAndOrDisplayCollection(uncompletedToDos, newlyAddedToDos);
 	})
 
 	$('.completed').click(function() {
-		toggleButtons()
+		toggleButtons();
 		// oldToDoCompleted = fetchAndOrDisplayCollection(completedToDos, oldToDoCompleted) || false
-		newlyCompletedToDos = fetchAndOrDisplayCollection(completedToDos, newlyCompletedToDos)
+		newlyCompletedToDos = fetchAndOrDisplayCollection(completedToDos, newlyCompletedToDos);
 	})
 
+	// clicking the pluss sign will save
 	$('.save').click(function() {
-		var toDo = new ToDoClass();
-		toDo.set('title', $('.add').val());
-		// sort into collections based on value of property completed
-		toDo.set('completed', false);
-		toDo.save({
-			success: function(result) {
-				console.log(result.id)
-				newlyAddedToDos.push(result.id)
-				addToDoButton();
-				if ($('.uncompleted').hasClass('toggle-button-active')) {
-					addToDo(result);
-					// $('.content ul').append('<hr>');
-				};
-			},
-			error: function(results, error) {
-				console.log(error.description)
-			}
-		});
+		save('.add');
 	});
+
+	$('.add').keydown(function(event) {
+		saveOnEnter('.' + $(this).attr('class'));
+   	});
 
 	$('.add-to-do').click(function() {
 		addToDoButton();
@@ -157,16 +145,43 @@ function addToDoButton() {
 	$('.container').toggleClass('container-active');
 };
 
-function validate() {
-	inputs = $('input');
+function validate(inputClass) {
 	var valid = true
-	inputs.each(function(input) {
-		if($(inputs[input]).val() === "") {
-			valid = false;
-		}
-	})
+	if($(inputClass).val() === "") {
+		valid = false;
+	}
 	return valid;
 }
+
+function save(inputClass) {
+	var toDo = new ToDoClass();
+	toDo.set('title', $(inputClass).val());
+	// sort into collections based on value of property completed
+	toDo.set('completed', false);
+	if (validate(inputClass)) {
+		toDo.save({
+			success: function(result) {
+				console.log(result.id)
+				newlyAddedToDos.push(result.id)
+				addToDoButton();
+				if ($('.uncompleted').hasClass('toggle-button-active')) {
+					addToDo(result);
+					// $('.content ul').append('<hr>');
+				};
+			},
+			error: function(results, error) {
+				console.log(error.description)
+			}
+		});
+	}
+}
+
+function saveOnEnter(inputClass) {
+	if (event.which == 13) {
+		save(inputClass);
+	};
+}
+
 
 
 
