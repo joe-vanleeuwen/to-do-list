@@ -54,11 +54,13 @@ li {
     padding: 5px 0;
     text-align: center;
     color: #1B4164;
+    position: relative;
+    /*background: linear-gradient(to bottom, #2574A0 0%, #2292D3 3%, #2D9AD8 97%, #2574A0 100%);*/
+
 }
 
 li:hover {
-    color: #A9E1F7;
-    background: #298AC2;
+    background: linear-gradient(to bottom, #2292D3 0%, #2D9AD8 34%, #2D9AD8 66%, #2292D3 100%);
 }
 
 .main-container {
@@ -72,36 +74,72 @@ li:hover {
     width: 400px;
     height: 480px;
     background: #2D9AD8;
+    box-shadow: 1px 1px 1px 0px #3487AD;
     border-radius: 8px;
     position: relative;
     overflow: hidden;
-    -webkit-transition: all .5s .6s ease;
+    -webkit-transition: border-radius .5s .6s ease;
+    -webkit-transition: box-shadow .5s .6s ease;
 }
 
 .container-active {
     border-radius: 8px 8px 0 0;
+    box-shadow: 1px 0px 1px 0px #3487AD;
+    -webkit-transition: box-shadow 0s ease;
 }
 
 .title {
     height: 80px;
     margin-bottom: 18px;
     background: linear-gradient(to bottom, #EEAF5E 0%, #D87F2D 100%);
-    border-bottom: 1px solid #3B91C2;
     border-radius: 8px 8px 0 0;
-    box-shadow: inset 0 2px 1px -1px #F8C98E;
+    box-shadow: inset 0 2px 1px -1px #F8C98E, 0 2px 1px -1px #28658D;;
 }
 
 .content {
     height: 275px;
     width: 305px;
     margin: 0 auto;
-    overflow: hidden;
+}
+
+.content a.edit, .content a.complete, .content a.delete {
+    position: absolute;
+    opacity: .5;
+    /*top: 12px;*/
+    -webkit-transition: all .1s ease;
+}
+
+.content a.edit {
+    color: #17304B;
+    left: 0px;
+}
+
+.content a.complete {
+    color: #17304B;
+    left: 22px;
+}
+
+.content a.delete {
+    right: 0;
+}
+
+.content a.edit:hover, .content a.complete:hover, .content a.delete:hover {
+    position: absolute;
+    opacity: 1;
+    top: 6px;
+    -webkit-transform: scale(1.6);
+}
+
+.content a.delete:hover {
+    color: rgb(133, 57, 57);
 }
 
 .new-to-do {
-    padding: 35px 45px 20px 46px;
+    width: 400px;
+    height: 110px;
+    /*padding: 35px 45px 20px 46px;*/
     border-radius: 0 0 8px 8px;
-    background: #2D9AD8;
+    background: linear-gradient(to bottom, #2D9AD8 0%, #197BB3 100%);
     position: absolute;
     z-index: -10;
     bottom: 0;
@@ -110,7 +148,13 @@ li:hover {
 
 .new-to-do-active {
     bottom: -105px;
+    box-shadow: 1px 1px 1px 0px #3487AD;
     -webkit-transition: bottom .7s ease;
+}
+
+.input-and-save {
+    width: 310px;
+    margin: 37px auto 0;
 }
 
 .thin-line {
@@ -118,7 +162,7 @@ li:hover {
     height: 3px;
     background: #EC8F3A;
     border-radius: 8px;
-    border-bottom: 1px solid #3B91C2;
+    box-shadow: 0 2px 1px -1px #28658D;
     position: absolute;
     z-index: -10;
     bottom: 8px;
@@ -190,26 +234,6 @@ li:hover {
     background: linear-gradient(to bottom, #F5BB72 0%, #D87F2D 100%);
 }
 
-/*
-.success, .failure {
-    height: 35px;
-    width: 100px;
-    padding-left: 5px;
-    text-align: center;
-    line-height: 35px;
-    position: absolute;
-    top: 0px;
-    right: 6px;
-    color: #FFF;
-    background: #5CDB94;
-    border-radius: 2px;
-    z-index: -1;
-}
-
-.failure {
-    background: #C35945;
-}*/
-
 .toggle-buttons {
     width: 212px;
     margin: 0 auto 18px;
@@ -217,6 +241,7 @@ li:hover {
 
 .toggle-button {
     width: 60px;
+    height: 29px;
     padding: 5px 20px;
     display: inline-block;
     background: #1C84BE;
@@ -226,7 +251,7 @@ li:hover {
     text-align: center;
     border: 1px solid #13608B;
     box-shadow: inset 0px 4px 1px -3px rgb(182, 182, 182);
-    text-shadow: 0 1px 0 #13608B;
+    text-shadow: 0 1px 0 #13608B;    
     background: linear-gradient(to bottom, #539BB8 0%, #197BB3 100%);
 }
 
@@ -235,6 +260,7 @@ li:hover {
 }
 
 .toggle-button-active {
+    line-height: 31px;
     background: linear-gradient(to bottom, #116291 0%, #2B88BE 100%);
 }
 
