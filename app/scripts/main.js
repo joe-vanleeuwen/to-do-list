@@ -19,8 +19,6 @@ var CompletedToDoCollectionClass = Parse.Collection.extend({
 var uncompletedToDos = new UncompletedToDoCollectionClass();
 var completedToDos = new CompletedToDoCollectionClass();
 
-var selectedId;
-
 $('document').ready(function() {
 
 	// fetching the uncompleted toDos to display initially
@@ -101,12 +99,12 @@ function fetchCollection(collection) {
 };
 
 // this will get resently modified toDos and add them into the appropriate collection. Awesome.
-function getQuery(id, toggleClass, collectionToBeAddedTo, collectionToBeDisplayed) {
+function getQuery(id, collection) {
 	var query = new Parse.Query(ToDoClass);
 	query.get(id, {
 	  success: function(toDo) {
-	      collectionToBeAddedTo.add(toDo);
-	      displayCollectionIf(collectionToBeDisplayed, toggleClass)
+	      collection.add(toDo);
+	      displayCollectionIf()
 	  },
 	  error: function(toDo, error) {
 	  	console.log(error.description);
@@ -120,39 +118,47 @@ function displayCollection(collection) {
 	// adding click and hover events to each toDo and display each toDo's title with edit, complete, and delete icons.
 	collection.each(function(toDo) {
 		// appending toDo. Appending icons to each toDo. Making icons clickable and adding functionality.
-		makeIconsClickable(addIcons(addToDo(toDo, collection), toDo, collection), toDo)
+		makeIconsClickable(addIcons(addToDo(toDo, collection), toDo, collection), toDo, collection)
 	});  
 };
 
+// appends icons to the toDos
 function addIcons(item, toDo, collection) {
 	$(item).hover(function() {
 		var editIt = '<a href="#" class="edit" "' + toDo.id + '">✎</a>';
 		var completeIt = '<a href="#" class="complete" "' + toDo.id + '">✓</a>';
 		var deleteIt = '<a href="#" class="delete" "' + toDo.id + '">✕</a>';
+
+		// if statement appends icons depending on which collection is being viewed.
 		if (collection === uncompletedToDos) {
 			$(this).append(editIt, completeIt, deleteIt)
 		}
 		else { $(this).append(deleteIt) };
 	},
+	// removes icons and title on hover out, replacing title immediately afterwards.
 	function() {
 		$(this).html('');
 		$(this).text(toDo.get('title'));
 	});
+	// item is the complete <li> tag that represents each toDo
 	return item;
 };
 
-function makeIconsClickable(item, toDo) {
+// listening for a click on the <li> tag representing each toDo. Finding the icon that is clicked and performing related function.
+function makeIconsClickable(item, toDo, collection) {
 	$(item).on('click', '.edit', function() {
+		// revealing input.
 		toggleEditModal();
+		// placing toDo title in input for editting.
 		$('.edit-input').val(toDo.get('title'));
-		selectedId = toDo.id;
+		// setting .edit-intup's id to the toDo's id who's icon was clicked--for use in saving the changes.
+		$('.edit-input').attr('id', toDo.id);
 	});
 	$(item).on('click', '.complete', function() {
-		selectedId = toDo.id;
-		saveCompletion(uncompletedToDos, completedToDos)
+		saveCompletion(collection, completedToDos, toDo.id)
 	});
 	$(item).on('click', '.delete', function() {
-		console.log('delete')
+		saveDeletion(collection, toDo.id)
 	});
 };
 
@@ -189,16 +195,16 @@ function saveAddition(inputClass, collection) {
 
 function saveEdit(inputClass, collection) {
 	collection.each(function(toDo) {
-		if (toDo.id === selectedId) {
+		if (toDo.id === $(inputClass).attr('id')) {
 			toDo.set('title', $(inputClass).val());
 			hardSave(toDo, inputClass, collection, 'saveEdit');
 		};
 	});
 };
 
-function saveCompletion(originalCollection, collection) {
+function saveCompletion(originalCollection, collection, toDoId) {
 	originalCollection.each(function(toDo) {
-		if (toDo.id === selectedId) {
+		if (toDo.id === toDoId) {
 			toDo.set('completed', true);
 			originalCollection.remove(toDo);
 			hardSave(toDo, '', collection, 'saveCompletion');
@@ -206,17 +212,23 @@ function saveCompletion(originalCollection, collection) {
 	});
 };
 
+function saveDeletion(collection, toDoId) {
+	collection.each(function(toDo) {
+		if (toDo.id === toDoId) {
+			collection.remove(toDo);
+			hardSave(toDo, '', collection, 'saveDeletion');
+		};
+	});
+}
+
 function hardSave(toDo, inputClass, collection, task) {
 	if (validate(inputClass)) {
 		toDo.save({
 			success: function(result) {
-				if (task === 'saveAddition') {
-					getQuery(toDo.id, '.uncompleted', collection, collection);
+				if (task === 'saveEdit') {
+					displayCollectionIf()
 				}
-				if (task === 'saveCompletion') {
-					getQuery(toDo.id, '.uncompleted', collection, uncompletedToDos);
-				}
-				else {displayCollectionIf(collection, '.uncompleted')};
+				else {getQuery(toDo.id, collection)};
 			},
 			error: function(results, error) {
 				console.log(error.description)
@@ -225,11 +237,14 @@ function hardSave(toDo, inputClass, collection, task) {
 	};
 };
 
-function displayCollectionIf(collection, toggleClass) {
-	if ($(toggleClass).hasClass('toggle-button-active')) {
-		displayCollection(collection);
+function displayCollectionIf() {
+	if ($('.uncompleted').hasClass('toggle-button-active')) {
+		displayCollection(uncompletedToDos);
 	};
-}
+	if ($('.completed').hasClass('toggle-button-active')) {
+		displayCollection(completedToDos);
+	};
+};
 
 
 
