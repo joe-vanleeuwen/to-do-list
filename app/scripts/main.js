@@ -19,35 +19,42 @@ var CompletedToDoCollectionClass = Parse.Collection.extend({
 var uncompletedToDos = new UncompletedToDoCollectionClass();
 var completedToDos = new CompletedToDoCollectionClass();
 
-var selectedId
+var selectedId;
 
 $('document').ready(function() {
 
 	// fetching the uncompleted toDos to display initially
-	fetchCollection(completedToDos)
 	fetchCollection(uncompletedToDos)
 
 	// toggle buttons ToDo and Completed
 	$('.uncompleted').click(function() {
-		toggleButtons();
-		displayCollection(uncompletedToDos)
+		if(!($(this).hasClass('toggle-button-active'))) {
+			toggleButtons();
+			displayCollection(uncompletedToDos);
+		}
 	})
 
 	$('.completed').click(function() {
-		toggleButtons();
-		displayCollection(completedToDos)
+		if(!($(this).hasClass('toggle-button-active'))) {
+			toggleButtons();
+			if(completedToDos.length === 0) {
+				fetchCollection(completedToDos)
+			}
+			else {displayCollection(completedToDos)};
+		};
 	})
 
 	// clicking the pluss sign will save
 	$('.add-button').click(function() {
-		toggleDropDown()
-		saveAddition('.add-input', uncompletedToDos)
-		// save('.add-input', uncompletedToDos);
+		toggleDropDown();
+		saveAddition('.add-input', uncompletedToDos);
 	});
 
 	$('.add-input').keydown(function(event) {
 		// toggleDropDown()
-		saveOnEnter(('.' + $(this).attr('class')), uncompletedToDos);
+		if (event.which == 13) {
+			saveAddition(('.' + $(this).attr('class')), uncompletedToDos);
+		};
    	});
 
    	// editting functionality
@@ -59,7 +66,9 @@ $('document').ready(function() {
 
    	$('.edit-input').keydown(function(event) {
    		// toggleEditModal()
-		saveOnEnter(('.' + $(this).attr('class')), uncompletedToDos);
+   		if (event.which == 13) {
+			saveEdit(('.' + $(this).attr('class')), uncompletedToDos);
+		};
    	});
 
 	$('.add-to-do').click(function() {
@@ -92,12 +101,12 @@ function fetchCollection(collection) {
 };
 
 // this will get resently modified toDos and add them into the appropriate collection. Awesome.
-function getQuery(collection, id) {
+function getQuery(id, toggleClass, collectionToBeAddedTo, collectionToBeDisplayed) {
 	var query = new Parse.Query(ToDoClass);
 	query.get(id, {
 	  success: function(toDo) {
-	      collection.add(toDo);
-	      displayCollectionIf(collection, '.uncompleted');
+	      collectionToBeAddedTo.add(toDo);
+	      displayCollectionIf(collectionToBeDisplayed, toggleClass)
 	  },
 	  error: function(toDo, error) {
 	  	console.log(error.description);
@@ -111,22 +120,26 @@ function displayCollection(collection) {
 	// adding click and hover events to each toDo and display each toDo's title with edit, complete, and delete icons.
 	collection.each(function(toDo) {
 		// appending toDo. Appending icons to each toDo. Making icons clickable and adding functionality.
-		makeIconsClickable(addIcons(addToDo(toDo, collection), toDo), toDo)
+		makeIconsClickable(addIcons(addToDo(toDo, collection), toDo, collection), toDo)
 	});  
 };
 
-// will take item argument which will be an <li> tag with a toDo title inside.
-function addIcons(item, toDo) {
+function addIcons(item, toDo, collection) {
 	$(item).hover(function() {
-		var icons = '<a href="#" class="edit" "' + toDo.id + '">✎</a><a href="#" class="complete" "' + toDo.id + '">✓</a><a href="#" class="delete" "' + toDo.id + '">✕</a>';
-		$(this).append(icons)
+		var editIt = '<a href="#" class="edit" "' + toDo.id + '">✎</a>';
+		var completeIt = '<a href="#" class="complete" "' + toDo.id + '">✓</a>';
+		var deleteIt = '<a href="#" class="delete" "' + toDo.id + '">✕</a>';
+		if (collection === uncompletedToDos) {
+			$(this).append(editIt, completeIt, deleteIt)
+		}
+		else { $(this).append(deleteIt) };
 	},
 	function() {
 		$(this).html('');
 		$(this).text(toDo.get('title'));
 	});
 	return item;
-}
+};
 
 function makeIconsClickable(item, toDo) {
 	$(item).on('click', '.edit', function() {
@@ -146,7 +159,7 @@ function makeIconsClickable(item, toDo) {
 function toggleEditModal() {
 	$('.modal-background').toggleClass('modal-background-active');
 	$('.modal-box').toggleClass('modal-box-active');
-}
+};
 
 function toggleButtons() {
 	$('.uncompleted').toggleClass('toggle-button-active');
@@ -197,8 +210,11 @@ function hardSave(toDo, inputClass, collection, task) {
 	if (validate(inputClass)) {
 		toDo.save({
 			success: function(result) {
-				if (task === 'saveAddition' || task === 'saveCompletion') {
-					getQuery(collection, toDo.id);
+				if (task === 'saveAddition') {
+					getQuery(toDo.id, '.uncompleted', collection, collection);
+				}
+				if (task === 'saveCompletion') {
+					getQuery(toDo.id, '.uncompleted', collection, uncompletedToDos);
 				}
 				else {displayCollectionIf(collection, '.uncompleted')};
 			},
@@ -209,17 +225,11 @@ function hardSave(toDo, inputClass, collection, task) {
 	};
 };
 
-function displayCollectionIf(collection, buttonClass) {
-	if ($(buttonClass).hasClass('toggle-button-active')) {
+function displayCollectionIf(collection, toggleClass) {
+	if ($(toggleClass).hasClass('toggle-button-active')) {
 		displayCollection(collection);
 	};
 }
-
-function saveOnEnter(inputClass, collection) {
-	if (event.which == 13) {
-		save(inputClass, collection);
-	};
-};
 
 
 
