@@ -137,9 +137,9 @@
                             expect(uncompletedToDos).to.have.length(collectionLength + 1);
                             done();
                         },2500)
-                    },2500)
+                    },3500)
                 },2500)
-            },2500)
+            },3500)
 
             uncompletedToDos.fetch();
         });
