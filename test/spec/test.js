@@ -58,15 +58,14 @@
         it('when ToDo button is depressed, the .content ul should only contain toDos who\'s completed property is false', function(done) {
             var uncompleted = 0;
             fetchCollection(uncompletedToDos)
-            displayCollection(uncompletedToDos);
 
             setTimeout(function(){
                 var allToDos = $('.content ul li');
                 uncompletedToDos.each(function(toDo, index) {
                     var title = $(allToDos[index]).text()
                     
-                    if (toDo.get('title') === title) {
-                        if (toDo.get('completed') === false)
+                    if ((toDo.get('title') === title) && (toDo.get('completed') === false)) {
+                        // if (toDo.get('completed') === false)
                         uncompleted += 1;
                     }
                 })
@@ -98,14 +97,23 @@
         });
 
         it('when input value === "", clicking .save (or pressing enter in .add input--how can i test?) should not save new toDo', function(done) {
-            newlyAddedToDos = [];
+            var collectionLength;
+
             $('.add-input').val('');
 
             setTimeout(function(){
+                collectionLength = uncompletedToDos.length;
                 $('.add-button').click();
-                expect(newlyAddedToDos).to.have.length(0);
-                done();
+                setTimeout(function(){
+                    uncompletedToDos.fetch();
+                    setTimeout(function(){    
+                        expect(uncompletedToDos).to.have.length(collectionLength);
+                        done();
+                    },2500)
+                },2500)
             },2500)
+
+            uncompletedToDos.fetch();
         });
 
         it('when an editted toDo is saved, uncompletedToDos.length should not increase', function(done) {
@@ -142,6 +150,34 @@
             },3500)
 
             uncompletedToDos.fetch();
+        });
+
+        it('when delete function is run on a specified toDo, said toDo should no longer exist in collection', function(done) {
+            var toDoExists = false;
+
+            var newToDoTitle = "Do this " + Math.floor(Math.random()*100000) + " times."
+            $('.add-input').val(newToDoTitle)
+
+            var newToDo = new ToDoClass();
+            newToDo.set('title', $('.add-input').val());
+            newToDo.set('completed', false);
+
+            setTimeout(function(){
+                hardSave(newToDo, '', uncompletedToDos, 'saveAddition');
+                setTimeout(function(){
+                    uncompletedToDos.fetch();
+                    setTimeout(function() {
+                        // perform deletion here
+                        uncompletedToDos.each(function(toDo) {
+                            if (toDo.id === newToDo.id) {
+                                toDoExists = true;
+                            }
+                        });
+                        expect(toDoExists).to.equal(false);
+                        done();
+                    },2500)
+                },2500)
+            },3500)
         });
     })
 })();
