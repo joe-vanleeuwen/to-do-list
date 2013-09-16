@@ -113,7 +113,6 @@ li:hover {
     color: #17304B;
     position: absolute;
     opacity: .5;
-    /*top: 12px;*/
     -webkit-transition: all .1s ease;
 }
 
@@ -155,8 +154,8 @@ li:hover {
 }
 
 .input-and-button {
-    width: 310px;
-    margin: 37px auto 0;
+    width: 313px;
+    margin: 34px 41px 0 auto;
 }
 
 .thin-line {
@@ -288,21 +287,27 @@ li:hover {
     border-radius: 8px;
     z-index: 200;
     visibility: hidden;
+     -webkit-transition: all .55s ease;
 }
 
 .modal-background-active {
     background: rgba(0, 0, 0, 0.4);
     visibility: visible;
+    -webkit-transition: all .7s ease;
 }
 
 .modal-box {
     z-index: 200;
     margin-top: 162px;
+    opacity: 0;
     visibility: hidden;
+     -webkit-transition: all .4s ease;
 }
 
 .modal-box-active {
+    opacity: 1;
     visibility: visible;
+    -webkit-transition: all .7s ease;
 }
 
 

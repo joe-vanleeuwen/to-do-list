@@ -59,7 +59,6 @@ $('document').ready(function() {
    	$('.edit-button').click(function() {
    		toggleEditModal()
    		saveEdit('.edit-input', uncompletedToDos)
-		// save('.edit-input', uncompletedToDos);
 	});
 
    	$('.edit-input').keydown(function(event) {
@@ -72,6 +71,12 @@ $('document').ready(function() {
 	$('.add-to-do').click(function() {
 		toggleDropDown();
 	});
+
+	$('.modal-background').click(function(event){
+    	if(event.target === this){
+    		toggleEditModal();
+    	}
+    });
 });
 
 function addToDo(toDo, collection) {
@@ -103,8 +108,8 @@ function getQuery(id, collection) {
 	var query = new Parse.Query(ToDoClass);
 	query.get(id, {
 	  success: function(toDo) {
-	      collection.add(toDo);
-	      displayCollectionIf()
+	  		collection.add(toDo);
+	      	displayCollectionIf()
 	  },
 	  error: function(toDo, error) {
 	  	console.log(error.description);
@@ -149,6 +154,10 @@ function makeIconsClickable(item, toDo, collection) {
 	$(item).on('click', '.edit', function() {
 		// revealing input.
 		toggleEditModal();
+		// hide drop down if visible.
+		if ($('.new-to-do').hasClass('new-to-do-active')) {
+			toggleDropDown();
+		};
 		// placing toDo title in input for editting.
 		$('.edit-input').val(toDo.get('title'));
 		// setting .edit-intup's id to the toDo's id who's icon was clicked--for use in saving the changes.
@@ -190,14 +199,15 @@ function saveAddition(inputClass, collection) {
 		toDo.set('title', $(inputClass).val());
 		toDo.set('completed', false);
 
-		hardSave(toDo, inputClass, collection, 'saveAddition');
+		hardSave(toDo, inputClass, collection);
 };
 
 function saveEdit(inputClass, collection) {
 	collection.each(function(toDo) {
 		if (toDo.id === $(inputClass).attr('id')) {
 			toDo.set('title', $(inputClass).val());
-			hardSave(toDo, inputClass, collection, 'saveEdit');
+
+			hardSave(toDo, inputClass, collection);
 		};
 	});
 };
@@ -207,7 +217,8 @@ function saveCompletion(originalCollection, collection, toDoId) {
 		if (toDo.id === toDoId) {
 			toDo.set('completed', true);
 			originalCollection.remove(toDo);
-			hardSave(toDo, '', collection, 'saveCompletion');
+
+			hardSave(toDo, '', collection);
 		};
 	});
 };
@@ -216,22 +227,31 @@ function saveDeletion(collection, toDoId) {
 	collection.each(function(toDo) {
 		if (toDo.id === toDoId) {
 			collection.remove(toDo);
-			hardSave(toDo, '', collection, 'saveDeletion');
+			displayCollectionIf();
+			toDo.destroy({
+				success: function(toDo) {
+				},
+				error: function(toDo, error) {
+					console.log(error.description);
+					getQuery(toDo.id, collection);
+				}
+			});
 		};
 	});
 }
 
-function hardSave(toDo, inputClass, collection, task) {
+function hardSave(toDo, inputClass, collection) {
 	if (validate(inputClass)) {
 		toDo.save({
-			success: function(result) {
-				if (task === 'saveEdit') {
+			success: function(toDo) {
+				if (inputClass === '.edit-input') {
 					displayCollectionIf()
 				}
 				else {getQuery(toDo.id, collection)};
 			},
-			error: function(results, error) {
-				console.log(error.description)
+			error: function(toDo, error) {
+				console.log(error.description);
+				getQuery(toDo.id, collection);
 			}
 		});
 	};

@@ -167,14 +167,16 @@
                 setTimeout(function(){
                     uncompletedToDos.fetch();
                     setTimeout(function() {
-                        // perform deletion here
-                        uncompletedToDos.each(function(toDo) {
-                            if (toDo.id === newToDo.id) {
-                                toDoExists = true;
-                            }
-                        });
-                        expect(toDoExists).to.equal(false);
-                        done();
+                        saveDeletion(uncompletedToDos, newToDo.id)
+                        setTimeout(function() {
+                            uncompletedToDos.each(function(toDo) {
+                                if (toDo.id === newToDo.id) {
+                                    toDoExists = true;              
+                                }
+                            });
+                            expect(toDoExists).to.equal(false);
+                            done();
+                        },2500)
                     },2500)
                 },2500)
             },3500)
