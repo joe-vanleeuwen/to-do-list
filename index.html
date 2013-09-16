@@ -10,7 +10,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-        <link rel="stylesheet" href="styles/37fb872c.main.css">
+        <link rel="stylesheet" href="styles/6e6002e9.main.css">
 
         <script src="http://www.parsecdn.com/js/parse-1.2.10.min.js"></script>
     </head>
@@ -21,6 +21,7 @@
         <![endif]-->
         <div class="main-container">
             <div class="container">
+                
                 <div class="title">
                     <h1>To Do</h1>
                 </div>
@@ -30,37 +31,30 @@
                 </div>
 
                 <div class="content">
-                    <ul>
-<!--                         <li>
-                            <a href="#" class="edit">✎</a><a href="#" class="complete">✓</a><a href="#" class="delete">✕</a>
-                            <span class="delete">✕</span>
-                            Stuff
-                        </li>
-                        <hr>
-                        <li>Stuff Stuff</li>
-                        <hr>
-                        <li>Stuff</li>
-                        <hr>
- -->                    </ul>
+                    <ul></ul>
                 </div>
             
-                <a href="#" class="add-to-do">
-                    add a To Do
-                </a>
+                <a href="#" class="add-to-do">add a To Do</a>
+                
+                <div class="modal-background">
+                    <div class="input-and-button modal-box">
+                        <input class="edit-input"><a href="#" class="rectangle-button edit-button">✎</a>
+                    </div>
+                </div>
 
+            </div> <!-- end .container -->
 
-                <!-- <div class="success">Success!</div>
-                <div class="failure">Failure!</div> -->
-            </div>
             <div class="new-to-do">
-                <div class="input-and-save">
-                    <input class="add" placeholder="To Do"><a href="#" class="rectangle-button save">Save</a>
+                <div class="input-and-button">
+                    <input class="add-input" placeholder="To Do"><a href="#" class="rectangle-button add-button">+</a>
                 </div>
             </div>
-            <div class="thin-line"></div>
-        </div>
 
-        
+            <div class="thin-line"></div>
+
+        </div> <!-- end .main-container -->
+
+        <span id="input-pixel-length"></span>
 
         <script src="scripts/1137e1f5.vendor.js"></script>
 
@@ -74,7 +68,7 @@
             ga('create','UA-XXXXX-X');ga('send','pageview');
         </script>
 
-        <script src="scripts/abfb177b.main.js"></script>
+        <script src="scripts/0829e44a.main.js"></script>
 
         <script src="scripts/d5d180ab.coffee.js"></script>
 </body>
