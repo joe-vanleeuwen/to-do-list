@@ -35,6 +35,7 @@ $('document').ready(function() {
 	$('.completed').click(function() {
 		if(!($(this).hasClass('toggle-button-active'))) {
 			toggleButtons();
+			// maybe could use some better logic here. This works fine though. Fetching collection only when user requests it. This is real-world stuff.
 			if(completedToDos.length === 0) {
 				fetchCollection(completedToDos)
 			}
@@ -42,59 +43,68 @@ $('document').ready(function() {
 		};
 	})
 
-	// clicking the pluss sign will save
+	// clicking the pluss sign will save new toDo
 	$('.add-button').click(function() {
 		toggleDropDown();
 		saveAddition('.add-input', uncompletedToDos);
 	});
 
 	$('.add-input').keydown(function(event) {
-		// toggleDropDown()
+		inputLetterLimit('.add-input')
 		if (event.which == 13) {
-			saveAddition(('.' + $(this).attr('class')), uncompletedToDos);
+			toggleDropDown();
+			saveAddition(('.add-input'), uncompletedToDos);
 		};
    	});
 
    	// editting functionality
    	$('.edit-button').click(function() {
-   		toggleEditModal()
+   		toggleEditModal();
    		saveEdit('.edit-input', uncompletedToDos)
 	});
 
    	$('.edit-input').keydown(function(event) {
-   		// toggleEditModal()
+   		inputLetterLimit('.edit-input')
    		if (event.which == 13) {
-			saveEdit(('.' + $(this).attr('class')), uncompletedToDos);
+   			toggleEditModal();
+			saveEdit(('.edit-input'), uncompletedToDos);
 		};
    	});
 
+   	// drop down the .add-to-do
 	$('.add-to-do').click(function() {
+		$('.add-input').focus();
 		toggleDropDown();
 	});
 
+	// making content 'scrollable'
+	$('.content').scroll();
+
+	// modal off when user clicks outside input and button
 	$('.modal-background').click(function(event){
     	if(event.target === this){
     		toggleEditModal();
-    	}
+    	};
     });
 });
+
+// end document ready
 
 function addToDo(toDo, collection) {
 	var item = $('<li>' + toDo.get('title') + '</li>');
 	$('.content ul').append('<hr>');
 	$('.content ul').append(item);
-	// if ($('li').length === collection.length) {
-	// 	$('.content ul').append('<hr>');
-	// }
-	// $('.content ul').append('<hr>');
+	// appending <hr> after last <li> tag. Since the <li> tags are dynamically created, I must use this if statement to find when the last <li> is created and then append the <hr>.
+	if ($('li').length === collection.length) {
+		$('.content ul').append('<hr>');
+	}
 	return item;
-}
+};
 
 function fetchCollection(collection) {
 	collection.fetch({
 		success: function(resultingCollection) {
-			// this will diplay all toDo's in the specified collection
-			// and attatch a click event to each <li>.
+			// this will diplay all toDo's in the specified collection and attatch a hover event to each <li>.
 			displayCollection(resultingCollection);
 		},
 		error: function(resultingCollection, error) {
@@ -109,13 +119,13 @@ function getQuery(id, collection) {
 	query.get(id, {
 	  success: function(toDo) {
 	  		collection.add(toDo);
-	      	displayCollectionIf()
+	      	displayCollectionIf();
 	  },
 	  error: function(toDo, error) {
 	  	console.log(error.description);
 	  }
 	});
-}
+};
 
 function displayCollection(collection) {
 	// clearing out the ul
@@ -123,7 +133,7 @@ function displayCollection(collection) {
 	// adding click and hover events to each toDo and display each toDo's title with edit, complete, and delete icons.
 	collection.each(function(toDo) {
 		// appending toDo. Appending icons to each toDo. Making icons clickable and adding functionality.
-		makeIconsClickable(addIcons(addToDo(toDo, collection), toDo, collection), toDo, collection)
+		makeIconsClickable(addIcons(addToDo(toDo, collection), toDo, collection), toDo, collection);
 	});  
 };
 
@@ -136,7 +146,7 @@ function addIcons(item, toDo, collection) {
 
 		// if statement appends icons depending on which collection is being viewed.
 		if (collection === uncompletedToDos) {
-			$(this).append(editIt, completeIt, deleteIt)
+			$(this).append(editIt, completeIt, deleteIt);
 		}
 		else { $(this).append(deleteIt) };
 	},
@@ -162,15 +172,18 @@ function makeIconsClickable(item, toDo, collection) {
 		$('.edit-input').val(toDo.get('title'));
 		// setting .edit-intup's id to the toDo's id who's icon was clicked--for use in saving the changes.
 		$('.edit-input').attr('id', toDo.id);
+		// focusing cursur in the input
+		$('.edit-input').focus();
 	});
 	$(item).on('click', '.complete', function() {
-		saveCompletion(collection, completedToDos, toDo.id)
+		saveCompletion(collection, completedToDos, toDo.id);
 	});
 	$(item).on('click', '.delete', function() {
-		saveDeletion(collection, toDo.id)
+		saveDeletion(collection, toDo.id);
 	});
 };
 
+// toggle modal, toggleButtons, and drop-down.
 function toggleEditModal() {
 	$('.modal-background').toggleClass('modal-background-active');
 	$('.modal-box').toggleClass('modal-box-active');
@@ -187,13 +200,27 @@ function toggleDropDown() {
 	$('.container').toggleClass('container-active');
 };
 
+// confirm input has content and then remove content. Simple, maybe should have done more with validation.
 function validate(inputClass) {
-	if($(inputClass).val() === "") {
+	if($(inputClass).val() === '') {
 		return false;
 	}
-	else {return true};
+	else {
+		$(inputClass).val('');
+		return true;
+	};
 };
 
+function inputLetterLimit(inputClass) {
+	$('#input-pixel-length').text($(inputClass).val());
+
+	if ($('#input-pixel-length').width() > 225) {
+		var inputVal = ($(inputClass).val()).slice(0, -1);
+		$(inputClass).val(inputVal);
+	};
+};
+
+// functions for saving new toDos, edits and completions of existing toDos, deltions of toDos.
 function saveAddition(inputClass, collection) {
 		var toDo = new ToDoClass();
 		toDo.set('title', $(inputClass).val());
@@ -226,6 +253,7 @@ function saveCompletion(originalCollection, collection, toDoId) {
 function saveDeletion(collection, toDoId) {
 	collection.each(function(toDo) {
 		if (toDo.id === toDoId) {
+			// i have these following two lines of code outside of the success so the feedback for the user is instantanious.
 			collection.remove(toDo);
 			displayCollectionIf();
 			toDo.destroy({
@@ -238,14 +266,15 @@ function saveDeletion(collection, toDoId) {
 			});
 		};
 	});
-}
+};
 
 function hardSave(toDo, inputClass, collection) {
 	if (validate(inputClass)) {
 		toDo.save({
 			success: function(toDo) {
+				// all other saves need a query to alter the collection. Edit does not change a toDo's collection--doesn't need query.
 				if (inputClass === '.edit-input') {
-					displayCollectionIf()
+					displayCollectionIf();
 				}
 				else {getQuery(toDo.id, collection)};
 			},
@@ -257,6 +286,7 @@ function hardSave(toDo, inputClass, collection) {
 	};
 };
 
+// displaying collection depending on which toglle button is toggled on.
 function displayCollectionIf() {
 	if ($('.uncompleted').hasClass('toggle-button-active')) {
 		displayCollection(uncompletedToDos);

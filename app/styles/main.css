@@ -57,11 +57,8 @@ ul {
 
 li {
     padding: 5px 0;
-    text-align: center;
     color: #1B4164;
     position: relative;
-    /*background: linear-gradient(to bottom, #2574A0 0%, #2292D3 3%, #2D9AD8 97%, #2574A0 100%);*/
-
 }
 
 li:hover {
@@ -71,7 +68,7 @@ li:hover {
 .main-container {
     width: 400px;
     height: 480px;
-    margin: 175px auto 150px;
+    margin: 135px auto 150px;
     position: relative;
 }
 
@@ -106,8 +103,10 @@ li:hover {
     width: 305px;
     margin: 0 auto;
     padding: 0 10px;
-    overflow: hidden;
+    overflow-y: scroll;
 }
+
+/* icons */
 
 .content a.edit, .content a.complete, .content a.delete {
     color: #17304B;
@@ -117,11 +116,11 @@ li:hover {
 }
 
 .content a.edit {
-    left: 0px;
+    right: 44px;
 }
 
 .content a.complete {
-    left: 22px;
+    right: 22px;
 }
 
 .content a.delete {
@@ -135,10 +134,11 @@ li:hover {
     -webkit-transform: scale(1.6);
 }
 
+/* bottom drop-down */
+
 .new-to-do {
     width: 400px;
     height: 110px;
-    /*padding: 35px 45px 20px 46px;*/
     border-radius: 0 0 8px 8px;
     background: linear-gradient(to bottom, #2D9AD8 0%, #197BB3 100%);
     position: absolute;
@@ -198,23 +198,6 @@ li:hover {
     line-height: 48px;
 }
 
-/*
-.rectangle-button {
-    width: 138px;
-    height: 37px;
-    background: #1C84BE;
-    color: #FFF;
-    font-size: .9em;
-    line-height: 2.5em;
-    margin: 15px 0 0 67px;
-    text-align: center;
-    display: inline-block;
-    border-radius: 3px;
-    border: 1px solid #13608B;
-    box-shadow: inset 0px 4px 1px -3px rgb(182, 182, 182);
-    text-shadow: 0 1px 0 #13608B;
-}*/
-
 .rectangle-button:hover {
     color: #20567A;
     background: linear-gradient(to bottom, #5BA8C7 0%, #197BB3 100%);
@@ -240,6 +223,8 @@ li:hover {
 .add-to-do:hover {
     background: linear-gradient(to bottom, #F5BB72 0%, #D87F2D 100%);
 }
+
+/* toggle buttons for To Do and Complete */
 
 .toggle-buttons {
     width: 212px;
@@ -308,6 +293,13 @@ li:hover {
     opacity: 1;
     visibility: visible;
     -webkit-transition: all .7s ease;
+}
+
+/* span to determine pixel length of inputVal */
+
+span#input-pixel-length {
+    position: absolute;
+    visibility: hidden;
 }
 
 
