@@ -19,6 +19,9 @@ var CompletedToDoCollectionClass = Parse.Collection.extend({
 var uncompletedToDos = new UncompletedToDoCollectionClass();
 var completedToDos = new CompletedToDoCollectionClass();
 
+// for use when user clicks Completed for the first time.
+var needsFetched = true;
+
 $('document').ready(function() {
 
 	// fetching the uncompleted toDos to display initially
@@ -35,9 +38,11 @@ $('document').ready(function() {
 	$('.completed').click(function() {
 		if(!($(this).hasClass('toggle-button-active'))) {
 			toggleButtons();
-			// maybe could use some better logic here. This works fine though. Fetching collection only when user requests it. This is real-world stuff.
-			if(completedToDos.length === 0) {
+			
+			// previous attempt at fetching had a bug. Think I have to use this global variable instead to ensure the collection gets fetched.
+			if(needsFetched) {
 				fetchCollection(completedToDos)
+				needsFetched = false;
 			}
 			else {displayCollection(completedToDos)};
 		};
