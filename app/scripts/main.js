@@ -259,12 +259,10 @@ function saveCompletion(originalCollection, collection, toDoId) {
 function saveDeletion(collection, toDoId) {
 	collection.each(function(toDo) {
 		if (toDo.id === toDoId) {
-			// i have these following two lines of code outside of the success so the feedback for the user is instantanious.
+			// i have these following two lines of code outside of the success so the feedback for the user is instantanious. Removed succes callback.
 			collection.remove(toDo);
 			displayCollectionIf();
 			toDo.destroy({
-				success: function(toDo) {
-				},
 				error: function(toDo, error) {
 					console.log(error.description);
 					getQuery(toDo.id, collection);
@@ -276,7 +274,7 @@ function saveDeletion(collection, toDoId) {
 
 function hardSave(toDo, inputClass, collection) {
 	if (validate(inputClass)) {
-		toDo.save({
+		toDo.save(null, {
 			success: function(toDo) {
 				// all other saves need a query to alter the collection. Edit does not change a toDo's collection--doesn't need query.
 				if (inputClass === '.edit-input') {
