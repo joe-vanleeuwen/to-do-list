@@ -140,9 +140,9 @@ function displayCollection(collection) {
 // appends icons to the toDos
 function addIcons(item, toDo, collection) {
 	$(item).hover(function() {
-		var editIt = '<a href="#" class="edit" "' + toDo.id + '">✎</a>';
-		var completeIt = '<a href="#" class="complete" "' + toDo.id + '">✓</a>';
-		var deleteIt = '<a href="#" class="delete" "' + toDo.id + '">✕</a>';
+		var editIt = '<a href="#" class="edit">✎</a>';
+		var completeIt = '<a href="#" class="complete">✓</a>';
+		var deleteIt = '<a href="#" class="delete">✕</a>';
 
 		// if statement appends icons depending on which collection is being viewed.
 		if (collection === uncompletedToDos) {
@@ -150,10 +150,9 @@ function addIcons(item, toDo, collection) {
 		}
 		else { $(this).append(deleteIt) };
 	},
-	// removes icons and title on hover out, replacing title immediately afterwards.
+	// removes icons hover out
 	function() {
-		$(this).html('');
-		$(this).text(toDo.get('title'));
+		$('ul').find('a').remove();
 	});
 	// item is the complete <li> tag that represents each toDo
 	return item;
@@ -175,9 +174,11 @@ function makeIconsClickable(item, toDo, collection) {
 		// focusing cursur in the input
 		$('.edit-input').focus();
 	});
+	// clicking checkmark
 	$(item).on('click', '.complete', function() {
 		saveCompletion(collection, completedToDos, toDo.id);
 	});
+	// clicking x
 	$(item).on('click', '.delete', function() {
 		saveDeletion(collection, toDo.id);
 	});
